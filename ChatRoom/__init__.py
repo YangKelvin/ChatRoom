@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template
 from . import db
 from . import user
 from werkzeug.security import generate_password_hash
@@ -52,6 +52,10 @@ def create_app(test_config=None):
         my_db.commit()
         print('Add four user sucessfully.')
         return redirect(url_for('user.register'))
+
+    @app.route('/index')
+    def index():
+        return render_template('index.html')
 
     db.init_app(app)
 
