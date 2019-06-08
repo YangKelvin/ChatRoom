@@ -1,7 +1,8 @@
 import os
-from flask import Flask
+from flask import Flask, redirect, url_for
 from . import db
 from . import user
+from werkzeug.security import generate_password_hash
 
 
 def create_app(test_config=None):
@@ -28,7 +29,32 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, Flask!'
 
+    # init db.USER
+    @app.route('/init-db-user')
+    def init_db_user():
+        my_db = db.get_db()
+        my_db.execute(
+            'INSERT INTO USER (UserName, Password, Email) VALUES (?, ?, ?)',
+            ('Admin', generate_password_hash('123'), 'admin2@test.com')
+        )
+        my_db.execute(
+            'INSERT INTO USER (UserName, Password, Email) VALUES (?, ?, ?)',
+            ('Admin2', generate_password_hash('123'), 'admin2@test.com')
+        )
+        my_db.execute(
+            'INSERT INTO USER (UserName, Password, Email) VALUES (?, ?, ?)',
+            ('User01', generate_password_hash('123'), 'user01@test.com')
+        )
+        my_db.execute(
+            'INSERT INTO USER (UserName, Password, Email) VALUES (?, ?, ?)',
+            ('User02', generate_password_hash('123'), 'user02@test.com')
+        )
+        my_db.commit()
+        print('Add four user sucessfully.')
+        return redirect(url_for('user.register'))
+
     db.init_app(app)
+
     app.register_blueprint(user.bp)
 
     return app
